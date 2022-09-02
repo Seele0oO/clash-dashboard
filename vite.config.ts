@@ -1,5 +1,7 @@
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import jotaiDebugLabel from 'jotai/babel/plugin-debug-label'
+import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh'
+import { defineConfig, splitVendorChunkPlugin } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import windiCSS from 'vite-plugin-windicss'
 import tsConfigPath from 'vite-tsconfig-paths'
@@ -8,7 +10,9 @@ export default defineConfig(
     env => ({
         plugins: [
             // only use react-fresh
-            env.mode === 'development' && react(),
+            env.mode === 'development' && react({
+                babel: { plugins: [jotaiDebugLabel, jotaiReactRefresh] },
+            }),
             tsConfigPath(),
             windiCSS(),
             VitePWA({
@@ -24,7 +28,11 @@ export default defineConfig(
                     name: 'Clash Dashboard',
                 },
             }),
+            splitVendorChunkPlugin(),
         ],
+        server: {
+            port: 3000,
+        },
         base: './',
         css: {
             preprocessorOptions: {
